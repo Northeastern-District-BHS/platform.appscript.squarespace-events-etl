@@ -34,10 +34,11 @@ function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
         new Date(event.startDate),
         new Date(event.endDate)
       )
+    } else {
+      matchingGCalEvent.setTitle(event.title);
+      matchingGCalEvent.setTime(new Date(event.startDate), new Date(event.endDate));
     }
-    matchingGCalEvent.setTitle(event.title);
     matchingGCalEvent.setDescription(getSquarespaceEventDescription(event))
-    matchingGCalEvent.setTime(new Date(event.startDate), new Date(event.endDate));
     matchingGCalEvent.setLocation(getEventLocationString(event));
   })
 
