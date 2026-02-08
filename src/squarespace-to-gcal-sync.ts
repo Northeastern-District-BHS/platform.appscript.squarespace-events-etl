@@ -54,7 +54,7 @@ function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
 
 function getSquarespaceEventDescription(event: Event) {
   let description = stripHtml(event.body);
-  return description += `\n{event.fullUrl}`;
+  return description += `\n${event.fullUrl}`;
 }
 
 function getEventLocationString(event: Event) {
