@@ -8,12 +8,11 @@
     "login": "clasp login"
   },
   "license": "GPL",
-  "dependencies": {},
   "devDependencies": {
+    "@google/clasp": "^2.5.0",
     "@types/google-apps-script": "^1.0.97",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "@google/clasp": "^2.5.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-googleappsscript": "^1.0.5",
@@ -23,5 +22,8 @@
     "webpack": "^5.99.9",
     "webpack-cli": "^6.0.1"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@igorskyflyer/strip-html": "^2.1.0"
+  }
 }
