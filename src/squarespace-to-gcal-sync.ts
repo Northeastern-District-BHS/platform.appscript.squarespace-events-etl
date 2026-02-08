@@ -69,7 +69,7 @@ function getEventLocationString(event: Event) {
     address += `${event.location.addressCountry}, `
   }
   if (address.length >= 2) {
-    address.slice(0, address.length - 2)
+    address = address.slice(0, address.length - 2)
   }
   return address;
 }
