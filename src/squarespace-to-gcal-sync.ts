@@ -1,8 +1,8 @@
 import { SquarespaceJsonResponse, Event } from "./types";
-import { stripHtml } from '@igorskyflyer/strip-html';
 
 const PUBLIC_CALENDAR_ID = "c_f25e317a84c451df1387d2da576963403a9447778695b06ba5a0720a264b0a45@group.calendar.google.com";
-const SQUARESPACE_EVENTS_URL = "https://www.nedistrict.org/events?format=json";
+const MAIN_URL = "https://www.nedistrict.org";
+const SQUARESPACE_EVENTS_URL = `${MAIN_URL}/events?format=json`;
 
 const NedEventsCalendar = CalendarApp.getCalendarById(PUBLIC_CALENDAR_ID);
 
@@ -24,9 +24,7 @@ function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
     }
 
     let matchingGCalEventIndex = gCalEvents.findIndex((gCalEvent) =>
-      gCalEvent.getDescription()
-        .split("\n")
-        .at(gCalEvent.getDescription().split("\n").length - 1) === event.fullUrl)
+      gCalEvent.getDescription());
     let matchingGCalEvent = gCalEvents.splice(matchingGCalEventIndex, 1).at(0);
 
 
@@ -53,8 +51,7 @@ function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
 }
 
 function getSquarespaceEventDescription(event: Event) {
-  let description = stripHtml(event.body);
-  return description += `\n${event.fullUrl}`;
+  return `${MAIN_URL}${event.fullUrl}`;
 }
 
 function getEventLocationString(event: Event) {
