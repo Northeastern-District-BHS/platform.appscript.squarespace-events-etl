@@ -18,7 +18,11 @@ function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
   let gCalEvents = NedEventsCalendar.getEvents(startDate, endDate);
 
   //create or update events. removes gCalEvents from array when processed, remaining are deleted below
-  upcomingSquarespaceEvents.forEach((event) => {
+  upcomingSquarespaceEvents.forEach((event, index) => {
+    if (index % 10 === 0) {
+      Utilities.sleep(1000);
+    }
+
     let matchingGCalEventIndex = gCalEvents.findIndex((gCalEvent) =>
       gCalEvent.getDescription()
         .split("\n")
@@ -40,12 +44,17 @@ function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
   })
 
   // remaining events delete here. They should have no matching Squarespace Event and should be deleted
-  gCalEvents.forEach((event) => event.deleteEvent());
+  gCalEvents.forEach((event, index) => {
+    if (index % 10 === 0) {
+      Utilities.sleep(1000);
+    }
+    event.deleteEvent();
+  });
 }
 
 function getSquarespaceEventDescription(event: Event) {
   let description = stripHtml(event.body);
-  return description += `\n{event.fullUrl}`;
+  return description += `\n${event.fullUrl}`;
 }
 
 function getEventLocationString(event: Event) {
