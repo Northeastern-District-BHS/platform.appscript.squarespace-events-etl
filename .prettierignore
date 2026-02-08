@@ -1,0 +1,7 @@
+# Ignore artifacts:
+build
+Code.js
+
+# Ignore all HTML files:
+**/*.html
+

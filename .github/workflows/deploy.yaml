@@ -1,0 +1,37 @@
+name: Deploy Appscript
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_lint_deploy:
+    runs-on: ubuntu-latest
+    name: Build, Lint, and Deploy
+    steps:
+      - name: Fetch Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - name: Install Dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - uses: daikikatsuragawa/clasp-action@v1.1.0
+        name: Push to Google Appscript Project
+        with:
+          accessToken: ${{ secrets.CLASP_ACCESS_TOKEN }}
+          refreshToken: ${{ secrets.CLASP_REFRESH_TOKEN }}
+          idToken: ${{ secrets.CLASP_ID_TOKEN }}
+          clientId: ${{ secrets.CLASP_CLIENT_ID }}
+          clientSecret: ${{ secrets.CLASP_CLIENT_SECRET}}
+          scriptId: ${{ secrets.SCRIPT_ID }}
+          command: "push"
