@@ -17,26 +17,33 @@ function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
   endDate.setFullYear(endDate.getFullYear() + 50);
   let gCalEvents = NedEventsCalendar.getEvents(startDate, endDate);
 
+  console.log(`Processing Squarespace Events...`);
   //create or update events. removes gCalEvents from array when processed, remaining are deleted below
   upcomingSquarespaceEvents.forEach((event, index) => {
+    console.log(`Processing event: "${event.title}" (${index + 1} of ${upcomingSquarespaceEvents.length})`);
     if (index % 10 === 0) {
       Utilities.sleep(1000);
     }
 
     let matchingGCalEventIndex = gCalEvents.findIndex((gCalEvent) =>
-      gCalEvent.getDescription());
+      gCalEvent.getDescription() === getSquarespaceEventDescription(event));
     let matchingGCalEvent = gCalEvents.splice(matchingGCalEventIndex, 1).at(0);
 
 
+
     if (!matchingGCalEvent) {
+      console.log(`No matching Google Calender found. Creating new event...`)
       matchingGCalEvent = NedEventsCalendar.createEvent(
         event.title,
         new Date(event.startDate),
         new Date(event.endDate)
       )
+      console.log(`Event: "${event.title}" successfully created`);
     } else {
+      console.log(`Matching Google Calender event found! (${matchingGCalEvent?.getTitle()})`)
       matchingGCalEvent.setTitle(event.title);
       matchingGCalEvent.setTime(new Date(event.startDate), new Date(event.endDate));
+      console.log(`Event: "${event.title}" successfully updated`);
     }
     matchingGCalEvent.setDescription(getSquarespaceEventDescription(event))
     matchingGCalEvent.setLocation(getEventLocationString(event));
@@ -48,7 +55,22 @@ function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
       Utilities.sleep(1000);
     }
     event.deleteEvent();
+    console.log(`Event: "${event.getTitle()}" successfully deleted`);
   });
+}
+
+function deleteAllGoogleCalenderEvents() {
+  const startDate = new Date();
+  startDate.setFullYear(startDate.getFullYear() - 50);
+  const endDate = new Date();
+  endDate.setFullYear(endDate.getFullYear() + 50);
+  let gCalEvents = NedEventsCalendar.getEvents(startDate, endDate);
+  gCalEvents.forEach((event, index) => {
+    if (index % 10 === 0) {
+      Utilities.sleep(1000);
+    }
+    event.deleteEvent();
+  })
 }
 
 function getSquarespaceEventDescription(event: Event) {
@@ -77,5 +99,6 @@ function getEventLocationString(event: Event) {
 
 export {
   getUpcomingSquareSpaceEvents,
-  updateGoogleCalendar
+  updateGoogleCalendar,
+  deleteAllGoogleCalenderEvents
 }
