@@ -70,6 +70,7 @@ function deleteAllGoogleCalenderEvents() {
       Utilities.sleep(1000);
     }
     event.deleteEvent();
+    console.log(`Event: "${event.getTitle()}" successfully deleted`);
   })
 }
 
