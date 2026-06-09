@@ -80,7 +80,12 @@ function updateGCalTimes(squareSpaceEvent: Event, googleEvent: GoogleAppsScript.
   const googleStartDate = googleEvent.getStartTime() as Date;
   const googleEndDate = googleEvent.getEndTime() as Date;
 
-  if (squareSpaceStartDate !== googleStartDate || squareSpaceEndDate !== googleEndDate) {
+  const isStartDateUpToDate = squareSpaceStartDate.toLocaleString() === googleStartDate.toLocaleString();
+  const isEndDateUpToDate = squareSpaceEndDate.toLocaleString() === googleEndDate.toLocaleString();
+
+  const isDatetimeUpToDate = isStartDateUpToDate && isEndDateUpToDate;
+
+  if (!isDatetimeUpToDate) {
     console.log(`Event: "${squareSpaceEvent.title}" google calendar datetimes outdated...`)
     googleEvent.setTime(squareSpaceStartDate, squareSpaceEndDate);
     console.log(`Event: "${squareSpaceEvent.title}" datetimes successfully updated`);
