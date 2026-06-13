@@ -18,21 +18,27 @@ function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
   endDate.setFullYear(endDate.getFullYear() + 50);
   let gCalEvents = NedEventsCalendar.getEvents(startDate, endDate);
 
-  console.log(`Processing Squarespace Events...`);
+  console.info(`Processing Squarespace Events...`);
 
   //create or update events. removes gCalEvents from array when processed, remaining are deleted below
   upcomingSquarespaceEvents.forEach((event, index) => {
-    console.log(`Processing event: "${event.title}" (${index + 1} of ${upcomingSquarespaceEvents.length})`);
+    console.info(`Processing event: "${event.title}" (${index + 1} of ${upcomingSquarespaceEvents.length})`);
 
-    let matchingGCalEventIndex = gCalEvents.findIndex((gCalEvent) =>
-      gCalEvent.getDescription() === getSquarespaceEventDescription(event));
+    let matchingGCalEventIndex = gCalEvents.findIndex((gCalEvent) => {
+
+      if (gCalEvent.getDescription() === getSquarespaceEventDescription(event)) {
+        console.log(`gCalDesc: ${gCalEvent.getDescription()}`);
+        console.log(`squareSpaceDesc: ${getSquarespaceEventDescription(event)}`);
+        return gCalEvent;
+      }
+    });
     let matchingGCalEvent = gCalEvents.splice(matchingGCalEventIndex, 1).at(0);
 
     if (matchingGCalEvent) {
-      console.log(`Matching Google Calender event found! (${matchingGCalEvent?.getTitle()})`)
+      console.info(`Matching Google Calender event found! (${matchingGCalEvent?.getTitle()})`)
       updateGCalEvent(event, matchingGCalEvent);
     } else {
-      console.log(`No matching Google Calender found. Creating new event...`)
+      console.info(`No matching Google Calender found. Creating new event...`)
       matchingGCalEvent = createGCalEvent(event);
     }
     Utilities.sleep(100);
@@ -41,7 +47,7 @@ function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
   // remaining events delete here. They should have no matching Squarespace Event and should be deleted
   gCalEvents.forEach((gCalEvent) => {
     gCalEvent.deleteEvent();
-    console.log(`Event: "${gCalEvent.getTitle()}" successfully deleted from google calendar`);
+    console.info(`Event: "${gCalEvent.getTitle()}" successfully deleted from google calendar`);
     Utilities.sleep(100);
   });
 }
@@ -54,7 +60,7 @@ function createGCalEvent(event: Event) {
   )
   googleEvent.setDescription(getSquarespaceEventDescription(event))
   googleEvent.setLocation(getEventLocationString(event));
-  console.log(`Event: "${event.title}" successfully created`);
+  console.info(`Event: "${event.title}" successfully created`);
 
   return googleEvent;
 }
@@ -63,14 +69,30 @@ function updateGCalEvent(squareSpaceEvent: Event, googleEvent: GoogleAppsScript.
   updateGCalTitle(squareSpaceEvent, googleEvent);
   updateGCalTimes(squareSpaceEvent, googleEvent);
   updateGCalLocation(squareSpaceEvent, googleEvent);
-  console.log(`Event: "${squareSpaceEvent.title}" is up-to-date with SquareSpace`);
+  console.info(`Event: "${squareSpaceEvent.title}" is up-to-date with SquareSpace`);
+}
+
+function deleteAllGoogleCalenderEvents() {
+  const startDate = new Date();
+  startDate.setFullYear(startDate.getFullYear() - 50);
+  const endDate = new Date();
+  endDate.setFullYear(endDate.getFullYear() + 50);
+
+  let gCalEvents = NedEventsCalendar.getEvents(startDate, endDate);
+  gCalEvents.forEach((event, index) => {
+    if (index % 10 === 0) {
+      Utilities.sleep(1000);
+    }
+    event.deleteEvent();
+    console.info(`Event: "${event.getTitle()}" successfully deleted`);
+  })
 }
 
 function updateGCalLocation(squareSpaceEvent: Event, googleEvent: GoogleAppsScript.Calendar.CalendarEvent) {
   if (googleEvent.getLocation() !== getEventLocationString(squareSpaceEvent)) {
-    console.log(`Event: "${squareSpaceEvent.title}" google calendar locations outdated...`)
+    console.info(`Event: "${squareSpaceEvent.title}" google calendar locations outdated...`)
     googleEvent.setLocation(getEventLocationString(squareSpaceEvent));
-    console.log(`Event: "${squareSpaceEvent.title}" google calendar location successfully updated`);
+    console.info(`Event: "${squareSpaceEvent.title}" google calendar location successfully updated`);
   }
 }
 
@@ -86,18 +108,18 @@ function updateGCalTimes(squareSpaceEvent: Event, googleEvent: GoogleAppsScript.
   const isDatetimeUpToDate = isStartDateUpToDate && isEndDateUpToDate;
 
   if (!isDatetimeUpToDate) {
-    console.log(`Event: "${squareSpaceEvent.title}" google calendar datetimes outdated...`)
+    console.info(`Event: "${squareSpaceEvent.title}" google calendar datetimes outdated...`)
     googleEvent.setTime(squareSpaceStartDate, squareSpaceEndDate);
-    console.log(`Event: "${squareSpaceEvent.title}" datetimes successfully updated`);
+    console.info(`Event: "${squareSpaceEvent.title}" datetimes successfully updated`);
   }
 
 }
 
 function updateGCalTitle(squareSpaceEvent: Event, googleEvent: GoogleAppsScript.Calendar.CalendarEvent) {
   if (googleEvent.getTitle() !== squareSpaceEvent.title) {
-    console.log(`Event: "${squareSpaceEvent.title}" google calendar title outdated...`)
+    console.info(`Event: "${squareSpaceEvent.title}" google calendar title outdated...`)
     googleEvent.setTitle(squareSpaceEvent.title);
-    console.log(`Event: "${squareSpaceEvent.title}" google calendar title successfully updated`);
+    console.info(`Event: "${squareSpaceEvent.title}" google calendar title successfully updated`);
   }
 }
 
@@ -126,6 +148,7 @@ function getEventLocationString(event: Event) {
 }
 
 export {
+  deleteAllGoogleCalenderEvents,
   getUpcomingSquareSpaceEvents,
   updateGoogleCalendar,
 }
