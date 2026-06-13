@@ -24,15 +24,9 @@ function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
   upcomingSquarespaceEvents.forEach((event, index) => {
     console.info(`Processing event: "${event.title}" (${index + 1} of ${upcomingSquarespaceEvents.length})`);
 
-    let matchingGCalEventIndex = gCalEvents.findIndex((gCalEvent) => {
-
-      if (gCalEvent.getDescription() === getSquarespaceEventDescription(event)) {
-        console.log(`gCalDesc: ${gCalEvent.getDescription()}`);
-        console.log(`squareSpaceDesc: ${getSquarespaceEventDescription(event)}`);
-        return gCalEvent;
-      }
-    });
-    let matchingGCalEvent = gCalEvents.splice(matchingGCalEventIndex, 1).at(0);
+    let matchingGCalEventIndex = gCalEvents.findIndex((gCalEvent) =>
+      gCalEvent.getDescription() === getSquarespaceEventDescription(event));
+    let matchingGCalEvent = matchingGCalEventIndex !== -1 && gCalEvents.splice(matchingGCalEventIndex, 1).at(0)
 
     if (matchingGCalEvent) {
       console.info(`Matching Google Calender event found! (${matchingGCalEvent?.getTitle()})`)
