@@ -13,9 +13,14 @@ function getUpcomingSquareSpaceEvents(): Event[] {
 }
 
 function updateGoogleCalendar(upcomingSquarespaceEvents: Event[]) {
-  const startDate = new Date();
-  const endDate = new Date();
-  endDate.setFullYear(endDate.getFullYear() + 50);
+  if (upcomingSquarespaceEvents.length === 0) {
+    console.info(`No events in SquareSpace`);
+    return;
+  }
+
+  const startDate = new Date(upcomingSquarespaceEvents.at(0)!.startDate);
+  const endDate = new Date(upcomingSquarespaceEvents.at(upcomingSquarespaceEvents.length - 1)!.endDate);
+
   let gCalEvents = NedEventsCalendar.getEvents(startDate, endDate);
 
   console.info(`Processing Squarespace Events...`);
